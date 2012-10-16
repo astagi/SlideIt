@@ -17,35 +17,35 @@ import android.util.Log;
 import android.view.Menu;
 
 public class MainActivity extends Activity {
-	
-	private BluetoothAdapter mBluetoothAdapter;
-	private ConnectThread ct;
-	
-	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-	    public void onReceive(Context context, Intent intent) {
-	        String action = intent.getAction();
-	        if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-	            BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-	            
-	        	 if(device.getName().contains("andrea"))
-	        		 connectDevice(device);
-	            
-	        }
-	    }
-	};
-	
-	private void connectDevice(BluetoothDevice device) {
-		mBluetoothAdapter.cancelDiscovery();
-		(ct = new ConnectThread(device)).start();
-	}
-	
-	private void sendCommand(String command) {
-		try {
-			ct.getSocket().getOutputStream().write(command.getBytes());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    
+    private BluetoothAdapter mBluetoothAdapter;
+    private ConnectThread ct;
+    
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                
+                 if(device.getName().contains("andrea"))
+                     connectDevice(device);
+                
+            }
+        }
+    };
+    
+    private void connectDevice(BluetoothDevice device) {
+        mBluetoothAdapter.cancelDiscovery();
+        (ct = new ConnectThread(device)).start();
+    }
+    
+    private void sendCommand(String command) {
+        try {
+            ct.getSocket().getOutputStream().write(command.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,17 +65,17 @@ public class MainActivity extends Activity {
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 
         if (pairedDevices.size() > 0) {
-	         for (BluetoothDevice device : pairedDevices) {
-	        	 Log.i("DEVICE", "" + device.getName());
-	        	 if(device.getName().contains("andrea"))
-	        		 connectDevice(device);
-	         }
-	     }
-	     
-	     IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-	     registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
+             for (BluetoothDevice device : pairedDevices) {
+                 Log.i("DEVICE", "" + device.getName());
+                 if(device.getName().contains("andrea"))
+                     connectDevice(device);
+             }
+         }
+         
+         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+         registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
     
-	     mBluetoothAdapter.startDiscovery();
+         mBluetoothAdapter.startDiscovery();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class MainActivity extends Activity {
     }
     
     public void onDestroy() {
-    	super.onDestroy();
-    	this.unregisterReceiver(mReceiver);
+        super.onDestroy();
+        this.unregisterReceiver(mReceiver);
     }
 }

@@ -17,7 +17,7 @@ class ConnectThread extends Thread {
         try {
             tmp = device.createRfcommSocketToServiceRecord(Constants.MY_UUID);
         } catch (IOException e) { 
-        	Log.e(Constants.TAG, "CONNERR: " + e.getMessage());
+            Log.e(Constants.TAG, "CONNERR: " + e.getMessage());
         }
         
         mmSocket = tmp;
@@ -25,7 +25,7 @@ class ConnectThread extends Thread {
     }
     
     public BluetoothSocket getSocket() {
-    	return mmSocket;
+        return mmSocket;
     }
  
     public void run() {
@@ -33,7 +33,7 @@ class ConnectThread extends Thread {
         try {
             mmSocket.connect();
         } catch (IOException connectException) {
-        	Log.e(Constants.TAG, "" + "CONNERR: " + connectException.getMessage());
+            Log.e(Constants.TAG, "" + "CONNERR: " + connectException.getMessage());
             try {
                 mmSocket.close();
             } catch (IOException closeException) { }
@@ -47,18 +47,18 @@ class ConnectThread extends Thread {
         } catch (IOException e) { }
  
         try {
-        	while(true) {
-				tmpOut.write("Hello World!".getBytes());
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-        	}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+            while(true) {
+                tmpOut.write("Hello World!".getBytes());
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
  
     public void cancel() {
@@ -73,20 +73,20 @@ class ConnectThread extends Thread {
 
 /*Method m = null;
 try {
-	m = device.getClass().getMethod("createRfcommSocket", new Class[] { int.class });
+    m = device.getClass().getMethod("createRfcommSocket", new Class[] { int.class });
 } catch (NoSuchMethodException e) {
-	// TODO Auto-generated catch block
-	e.printStackTrace();
+    // TODO Auto-generated catch block
+    e.printStackTrace();
 }
 try {
-	mmSocket = (BluetoothSocket) m.invoke(device, Integer.valueOf(1));
+    mmSocket = (BluetoothSocket) m.invoke(device, Integer.valueOf(1));
 } catch (IllegalArgumentException e) {
-	// TODO Auto-generated catch block
-	e.printStackTrace();
+    // TODO Auto-generated catch block
+    e.printStackTrace();
 } catch (IllegalAccessException e) {
-	// TODO Auto-generated catch block
-	e.printStackTrace();
+    // TODO Auto-generated catch block
+    e.printStackTrace();
 } catch (InvocationTargetException e) {
-	// TODO Auto-generated catch block
-	e.printStackTrace();
+    // TODO Auto-generated catch block
+    e.printStackTrace();
 } // 1==RFCOMM channel code */
