@@ -3,23 +3,28 @@ package org.as.slideit;
 import java.io.IOException;
 import java.util.Set;
 
-import com.example.prova.R;
+import org.as.slideit.R;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 public class MainActivity extends Activity {
     
     private BluetoothAdapter mBluetoothAdapter;
-    private ConnectThread ct;
+    private BluetoothSocket mmSocket;
     
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -36,15 +41,60 @@ public class MainActivity extends Activity {
     
     private void connectDevice(BluetoothDevice device) {
         mBluetoothAdapter.cancelDiscovery();
-        (ct = new ConnectThread(device)).start();
+        (new PrepareBluetooth(device)).execute("");
     }
     
-    private void sendCommand(String command) {
+    private void sendCommand(int cmd) {
         try {
-            ct.getSocket().getOutputStream().write(command.getBytes());
+        	mmSocket.getOutputStream().write(cmd);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    private void initGraphics() {
+    	Button F5 = (Button)this.findViewById(R.id.F5);
+    	Button Ffw = (Button)this.findViewById(R.id.FFW);
+    	Button Rew = (Button)this.findViewById(R.id.REW);
+    	Button Esc = (Button)this.findViewById(R.id.ESC);
+
+    	
+    	F5.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				sendCommand(0xA0);
+				
+			}
+    		
+    	});
+    	
+    	Ffw.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				sendCommand(0xA1);
+				
+			}
+    		
+    	});
+    	
+    	Rew.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				sendCommand(0xA2);
+				
+			}
+    		
+    	});
+    	
+    	Esc.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				sendCommand(0xA3);
+				
+			}
+    		
+    	});
+    	
     }
 
     @Override
@@ -75,7 +125,8 @@ public class MainActivity extends Activity {
          IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
          registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
     
-         mBluetoothAdapter.startDiscovery();
+         //mBluetoothAdapter.startDiscovery();
+         
     }
 
     @Override
@@ -87,5 +138,46 @@ public class MainActivity extends Activity {
     public void onDestroy() {
         super.onDestroy();
         this.unregisterReceiver(mReceiver);
+    }
+    
+    private class PrepareBluetooth extends AsyncTask<String, Void, String> {
+
+        
+
+		private BluetoothDevice blu_device;
+
+		public PrepareBluetooth(BluetoothDevice dev) {
+            blu_device = dev;
+
+            BluetoothSocket tmp = null;
+
+            try {
+                tmp = blu_device.createRfcommSocketToServiceRecord(Constants.MY_UUID);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "CONNERR: " + e.getMessage());
+            }
+
+            mmSocket = tmp;
+
+            try {
+                mmSocket.connect();
+            } catch (IOException connectException) {
+                Log.e(Constants.TAG, "" + "CONNERR: " + connectException.getMessage());
+                try {
+                    mmSocket.close();
+                } catch (IOException closeException) { }
+            }
+        }
+
+        protected String doInBackground(String... urls) {
+
+
+            return null;
+
+        }
+
+        protected void onPostExecute(String result) {
+            initGraphics();
+        }
     }
 }

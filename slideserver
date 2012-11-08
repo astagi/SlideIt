@@ -11,6 +11,8 @@ from bluetooth import *
 
 UUID = "00001101-0000-1000-8000-00805F9B34FB"
 
+allowed_cmds = ['Left', 'Right']
+
 def pair(pin, device_addr):
     os.system('echo "%s" | bluez-simple-agent hci0 %s' % (pin, device_addr))
 
@@ -24,12 +26,13 @@ def list_device():
     for name, addr in nearby_devices:
         print " %s - %s" % (addr, name)
 
-def parse_command(command):
+def exec_command(command):
     os.system('xvkbd -text "\[%s]"' % command)
+    print "Command executed"
 
 def start():
     server_sock=BluetoothSocket( RFCOMM )
-    server_sock.bind(("", 11))
+    server_sock.bind(("", 29))
     server_sock.listen(400)
 
     port = server_sock.getsockname()[1]
@@ -47,8 +50,23 @@ def start():
 
     try:
         while True:
-            data = client_sock.recv(1024)
+            data = client_sock.recv(1)
             if len(data) == 0: break
+            data = ord(data)
+            print data
+            if data == 0xA0:
+                exec_command("F5")
+
+            elif data == 0xA1:
+                exec_command("Right")
+
+            elif data == 0xA2:
+                exec_command("Left")
+
+            elif data == 0xA3:
+                exec_command("Esc")
+
+
             print "received [%s]" % data
     except IOError:
         pass
@@ -60,7 +78,6 @@ def start():
     print "all done"
 
 def main():
-
     if sys.argv[1] == "list":
         list_device()
     elif sys.argv[1] == "pair":
